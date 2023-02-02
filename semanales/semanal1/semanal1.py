@@ -5,9 +5,23 @@
 
     Recursos:
     Sobrecarga de metodos: https://www.geeksforgeeks.org/python-method-overloading/
+    Modificadores de acceso: http://www.tugurium.com/python/index.php?C=PYTHON.11#:~:text=El%20modificador%20de%20acceso%20establece,que%20se%20convierta%20en%20privado.
+    Convenciones: https://cosasdedevs.com/posts/convencion-nombres-python/
 """
 
 import random
+import math
+
+class Colors():
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 class Perla():
     """
@@ -56,14 +70,14 @@ class Balanza():
     """
         Clase que representa a la balanza
     """
-    def sumaPeso(conjunto):
+    def __suma_peso(conjunto):
         """
             Suma el peso total de un conjunto de perlas
         """
-        pesoTotal = 0
+        peso_total = 0
         for elemento in conjunto:
-            pesoTotal = pesoTotal + elemento.peso
-        return pesoTotal
+            peso_total = peso_total + elemento.peso
+        return peso_total
 
     def pesa(conjunto1, conjunto2) -> int:
         """
@@ -78,8 +92,8 @@ class Balanza():
         """
         Balanza.contador = Balanza.contador+1
         # self es como el this de java y tiene que ser pasado como parametro
-        pesoIzquierdo = Balanza.sumaPeso(conjunto1)
-        pesoDerecho = Balanza.sumaPeso(conjunto2)
+        pesoIzquierdo = Balanza.__suma_peso(conjunto1)
+        pesoDerecho = Balanza.__suma_peso(conjunto2)
         
         if pesoDerecho == pesoIzquierdo:
             return 0 
@@ -89,7 +103,16 @@ class Balanza():
             return -1
 
     def pesaUnitario(perla1,perla2) -> int:
+        """
+            Pesa la perla1 y la perla2
+            Regresa 0 si ambas perlas pesan lo mismo, 1 si
+            la perla2 es mas pesada y -1 si la perla1 es 
+            mas pesada.
 
+            Args:
+                perla1: Perla
+                perla2: Perla
+        """
         pesoI = perla1.peso
         pesoD = perla2.peso
 
@@ -119,11 +142,11 @@ def conjuntoDePerlas(cantidad):
     i = 0
     
     # Posicion de la perla falsa
-    posicionPerlaFalsa = random.randint(0,cantidad-1)
+    posicion_perla_falsa = random.randint(0,cantidad-1)
 
     # Creamos y agregamos las perlas al arreglo
     while cantidad > i :
-        if i == posicionPerlaFalsa:
+        if i == posicion_perla_falsa:
             arreglo.append(PerlaFalsa())
         else:
             arreglo.append(PerlaReal()) 
@@ -131,7 +154,90 @@ def conjuntoDePerlas(cantidad):
 
     return arreglo
 
-def encuentraPerlaFalsaLogN(arreglo) -> int:
+def encuentraPerlaFalsaTiempoLineal(arreglo) -> int:
+
+    """
+        Regresa la posicion de la perla falsa 
+        de un arreglo con perlas reales
+        y una falsa en tiempo O(log n)
+    """
+
+    # Longitud del arreglo
+    n = len(arreglo)
+
+    # Pesamos una por una
+    for i in range(n):
+        estatus = Balanza.pesaUnitario(arreglo[i],arreglo[i+1])
+        if estatus == 1:
+            return i
+        elif estatus == -1:
+            return i+1
+        else:    
+            continue
+    
+    # En caso de que no exista una perla falsa dentro del conjunto
+    return None
+
+def encuentraPerlaFalsaUsando2VecesLaBalanza(arreglo) -> int:
+    """
+        Encuentra la perla falsa
+        para un conjunto de 8 perlas
+        usando unicamente dos veces la balanza
+    """
+    posicion = 0
+    conjunto = arreglo
+
+    # Dividimos el conjunto en 3
+    conjunto1 = conjunto[0:3]
+    conjunto2 = conjunto[3:6]
+    conjunto3 = conjunto[6:8]
+
+    # Primer uso de la balanza
+    estatus = Balanza.pesa(conjunto1,conjunto2)
+
+    # Vemos que conjunto contiene la perla falsa
+    if estatus == 0:
+        # La perla esta en el conjunto 3
+        conjunto = conjunto3
+        # Por lo tanto las primeras 6 perlas son reales
+        posicion = 6
+    elif estatus == 1:
+        # La perla esta en el conjunto 1
+        conjunto = conjunto1
+        """
+        Puede que se encuentre en las primeras posiciones
+        por eso no modificamos la posicion
+        """
+    else:
+        # La perla se encuentra en el conjunto 2
+        conjunto = conjunto2
+        # Las primeras 3 perlas son reales
+        posicion = 3
+
+    # Veamos si el conjunto se puede dividir en 3 o en 2
+    if  len(conjunto)%3 == 0:
+        conjunto1 = conjunto[0:1]
+        conjunto2 = conjunto[1:2]
+        conjunto3 = conjunto[2:3]
+    else:
+        conjunto1 = conjunto[0:1]
+        conjunto2 = conjunto[1:2]
+
+    # Segundo uso de la balanza
+    estatus = Balanza.pesa(conjunto1,conjunto2)
+
+    if estatus == 0:
+        # La perla esta en el conjunto 3
+        posicion = posicion + 2
+    elif estatus == 1:
+        # La perla esta en el conjunto 1
+        pass
+    else:
+        # La perla esta en el conjunto 2
+        posicion = posicion + 1
+    return posicion
+
+def encuentraPerlaFalsaTiempoLogN(arreglo) -> int:
     """
         Regresa la posicion de la perla falsa 
         de un arreglo con perlas reales
@@ -145,9 +251,9 @@ def encuentraPerlaFalsaLogN(arreglo) -> int:
     """
     # Longitud del arreglo
     lent = len(arreglo)
-    return encuentraPerlaFalsa(arreglo=arreglo,posicion=0,longitud=lent)
+    return encuentraPerlaFalsaTiempoLogNAux(arreglo=arreglo,posicion=0,longitud=lent)
 
-def encuentraPerlaFalsa(arreglo,posicion,longitud) -> int:
+def encuentraPerlaFalsaTiempoLogNAux(arreglo,posicion,longitud) -> int:
     """
         Regresa la posicion de la perla falsa 
         de un arreglo con perlas reales
@@ -190,14 +296,14 @@ def par(arreglo,posicion,longitud) -> int:
         if len(conjunto1)==1:
             return posicion
         else:
-            return encuentraPerlaFalsa(conjunto1,posicion=posicion,longitud=mitad)
+            return encuentraPerlaFalsaTiempoLogNAux(conjunto1,posicion=posicion,longitud=mitad)
     else: # La perla se encuentra en el lado derecho
         if len(conjunto2)==1:
             return posicion + 1
         else:
-            return encuentraPerlaFalsa(conjunto2,posicion=posicion + mitad,longitud=mitad)
+            return encuentraPerlaFalsaTiempoLogNAux(conjunto2,posicion=posicion + mitad,longitud=mitad)
 
-def impar(arreglo,posicion,longitud):
+def impar(arreglo,posicion,longitud) -> int:
     """
         Regresa la posicion de la perla falsa
         dado un arreglo de longitud impar y una posicion
@@ -219,12 +325,12 @@ def impar(arreglo,posicion,longitud):
 
     # Verificamos el estatus
     if estatus == 0: # La perla falsa esta del lado izquierdo
-        return encuentraPerlaFalsa(conjunto1,posicion=posicion,longitud=mitad+1)
+        return encuentraPerlaFalsaTiempoLogNAux(conjunto1,posicion=posicion,longitud=mitad+1)
     elif estatus == -1: # La perla falsa esta del lado derecho
         if len(conjunto2) == 1:
             return posicion + mitad + 1
         else:
-            return encuentraPerlaFalsa(conjunto2,posicion=posicion+mitad+1,longitud=mitad)
+            return encuentraPerlaFalsaTiempoLogNAux(conjunto2,posicion=posicion+mitad+1,longitud=mitad)
     else:
         """
             En este caso nunca se entra por como realizamos la division del arreglo,
@@ -232,70 +338,76 @@ def impar(arreglo,posicion,longitud):
         """
         return None 
 
-def encuentraPerlaFalsaN(arreglo) -> int:
 
-    """
-        Regresa la posicion de la perla falsa 
-        de un arreglo con perlas reales
-        y una falsa en tiempo O(log n)
-    """
+print(Colors.HEADER +
+"""
+Hay 8 perlas, todas exactamente iguales en apariencia y tacto. Cada una pesa exactamente lo mismo
+salvo una, que es falsa y pesa ligeramente menos.
 
-    # Longitud del arreglo
-    n = len(arreglo)
-
-    # Pesamos una por una
-    for i in range(n):
-        estatus = Balanza.pesaUnitario(arreglo[i],arreglo[i+1])
-        if estatus == 1:
-            return i
-        elif estatus == -1:
-            return i+1
-        else:    
-            continue
-    
-    # En caso de que no exista una perla falsa dentro del conjunto
-    return None
-
-def encuentraPerlaFalsaUsando2VecesLaBalanza(arreglo) -> int:
-    """
-        Este metodo solo aplica para 
-        un conjunto de 8 perlas 
-        donde una de ellas es falsa y 
-        las demas reales
-    """
-    posicion = 0
-    n = len(arreglo)
-    mitad = int(n/2)
-    arr = arreglo
-    
-    # Implementacion iterativa
-    while True:
-        if n == 2:
-            break
-        conjunto1 = arr[0:mitad]
-        conjunto2 = arr[mitad:n]
-        estatus = Balanza.pesa(conjunto1=conjunto1,conjunto2=conjunto2)
-        if estatus == 1: # La perla falsa se encuentra del lado izquierdo
-            arr = conjunto1
-        elif estatus == -1: # La perla falsa se encuentra del lado derecho
-            arr = conjunto2
-            posicion = posicion + mitad
-        n = mitad
-        mitad = int(n/2)
-
-
-    if arr[0].peso > arr[1].peso:
-        return posicion + 1
-    elif arr[0].peso < arr[1].peso:
-        return posicion
-    else: 
-        return -1 
-
+""" + Colors.ENDC)
 # Conjunto de perlas
+perlas = conjuntoDePerlas(8)
+print(f"Perlas: {perlas}")
+
+# Brinda un algoritmo que encuentre la perla falsa en tiempo Θ(n)
+posicion1 = encuentraPerlaFalsaTiempoLineal(perlas)
+print(Colors.HEADER +
+"""
+
+Brinda un algoritmo que encuentre la perla falsa en tiempo Θ(n)
+
+""" + Colors.ENDC)
+print(f"La posicion de la perla falsa es: {posicion1}")
+
+# Brinda un algoritmo que encuentre la perla falsa usando la balanza maximo 2 veces.
+posicion2 = encuentraPerlaFalsaUsando2VecesLaBalanza(perlas)
+print(Colors.HEADER +
+"""
+
+Brinda un algoritmo que encuentre la perla falsa usando la balanza maximo 2 veces.
+
+""" + Colors.ENDC)
+print(f"La posicion de la perla falsa es: {posicion2}")
+
+"""
+Generalizando el problema para recibir un grupo de n perlas en las que una es falsa. Brinda un
+algoritmo que encuentre la perla falsa en tiempo O(log n)
+"""
+posicion3 = encuentraPerlaFalsaTiempoLogN(perlas)
+print(Colors.HEADER +
+""" 
+
+Generalizando el problema para recibir un grupo de n perlas en las que una es falsa. Brinda un
+algoritmo que encuentre la perla falsa en tiempo O(log n)
+
+""" + Colors.ENDC)
+
+print(f"La posicion de la perla falsa es: {posicion3}")
+
+
+print(Colors.HEADER +
+"""
+
+Si el problema fuera sobre 1234 perlas en lugar de 8, ¿cuantas veces es suficiente usar la balanza para
+encontrar la perla falsa utilizando la estrategia del inciso anterior? 
+
+""" + Colors.ENDC)
+
 perlas = conjuntoDePerlas(1234)
-# print(perlas)
-# posicion = encuentraPerlaFalsaUsando2VecesLaBalanza(perlas)
-posicionPerlaFalsa = encuentraPerlaFalsaLogN(perlas)
-print(f"La posicion de la perla falsa es: {posicionPerlaFalsa}")
-print(f"Comprobacion: {perlas[posicionPerlaFalsa]}")
-print(Balanza.contador)
+Balanza.contador = 0
+posicion4 = encuentraPerlaFalsaTiempoLogN(perlas)
+numero_de_usos = Balanza.contador
+print(f"La posicion de la perla falsa es: {posicion4}")
+print(f"El numero de usos de la balanza fue: {numero_de_usos}")
+print(Colors.WARNING + 
+"""
+NOTA: El numero de usos de la balanza depende de la posicion de la perla,
+ya que a veces se divide en dos conjuntos del mismo tamaño y a veces en
+dos conjuntos de tamaño diferente. Esto ocurre por la division de numeros
+pares e impares, dependiendo de la posicion de la perla falsa
+se puede tomar un conjunto par o impar.
+""")
+
+
+
+
