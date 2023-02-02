@@ -33,7 +33,7 @@ class PerlaReal(Perla):
     def __init__(self) -> None:
         self.peso = 1
         super().__init__()
-    # Implementamos la representacion del objeto a imprimir (heredada del Perla)
+    # Implementamos la representacion del objeto al imprimir (heredada de Perla)
     def __str__(self) -> str:
         return super().__str__()
 
@@ -45,7 +45,7 @@ class PerlaFalsa(Perla):
     def __init__(self) -> None:
         self.peso = 0
         super().__init__()
-    # Implementamos la representacion del objeto a imprimir (heredada del Perla)
+    # Implementamos la representacion del objeto al imprimir (heredada de Perla)
     def __str__(self) -> str:
         return super().__str__()
 
@@ -135,7 +135,7 @@ def encuentraPerlaFalsaLogN(arreglo) -> int:
     """
         Regresa la posicion de la perla falsa 
         de un arreglo con perlas reales
-        y una falsa
+        y una falsa en tiempo O(log n)
 
         Args:
             arreglo: arreglo de perlas
@@ -170,7 +170,7 @@ def par(arreglo,posicion,longitud) -> int:
 
         Args:
             arreglo: arreglo de perlas de longitud par
-            posicion: posiciones recorridad
+            posicion: posiciones recorridas
     """
     # Longitud del arreglo
     n = longitud
@@ -203,8 +203,8 @@ def impar(arreglo,posicion,longitud):
         dado un arreglo de longitud impar y una posicion
 
         Args:
-            arreglo: arreglo de perlas de longitud par
-            posicion: posiciones recorridad
+            arreglo: arreglo de perlas de longitud impar
+            posicion: posiciones recorridas
     """
     # Longitud del arreglo
     n = longitud
@@ -234,6 +234,12 @@ def impar(arreglo,posicion,longitud):
 
 def encuentraPerlaFalsaN(arreglo) -> int:
 
+    """
+        Regresa la posicion de la perla falsa 
+        de un arreglo con perlas reales
+        y una falsa en tiempo O(log n)
+    """
+
     # Longitud del arreglo
     n = len(arreglo)
 
@@ -262,7 +268,7 @@ def encuentraPerlaFalsaUsando2VecesLaBalanza(arreglo) -> int:
     mitad = int(n/2)
     arr = arreglo
     
-
+    # Implementacion iterativa
     while True:
         if n == 2:
             break
@@ -274,7 +280,6 @@ def encuentraPerlaFalsaUsando2VecesLaBalanza(arreglo) -> int:
         elif estatus == -1: # La perla falsa se encuentra del lado derecho
             arr = conjunto2
             posicion = posicion + mitad
-
         n = mitad
         mitad = int(n/2)
 
