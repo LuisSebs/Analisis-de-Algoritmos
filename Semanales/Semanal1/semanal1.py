@@ -1,6 +1,7 @@
 """
     Semanal: 1
-    Arrieta Mancera Luis Sebastian
+    Arrieta Mancera Luis Sebastian (318174116)
+    Martinez Hernandez Zuriel Enrique (318056423)
     Semestre 2023-2
 
     Recursos:
@@ -377,8 +378,8 @@ posicion3 = encuentraPerlaFalsaTiempoLogN(perlas)
 print(Colors.HEADER +
 """ 
 
-Generalizando el problema para recibir un grupo de n perlas en las que una es falsa. Brinda un
-algoritmo que encuentre la perla falsa en tiempo O(log n)
+Generalizando el problema para recibir un grupo de n perlas en las que una es falsa. 
+Brinda un algoritmo que encuentre la perla falsa en tiempo O(log n)
 
 """ + Colors.ENDC)
 
@@ -388,7 +389,7 @@ print(f"La posicion de la perla falsa es: {posicion3}")
 print(Colors.HEADER +
 """
 
-Si el problema fuera sobre 1234 perlas en lugar de 8, ¿cuantas veces es suficiente usar la balanza para
+Si el problema fuera sobre 1234 perlas en lugar de 8, ¿Cuantas veces es suficiente usar la balanza para
 encontrar la perla falsa utilizando la estrategia del inciso anterior? 
 
 """ + Colors.ENDC)
