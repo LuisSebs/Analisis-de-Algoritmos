@@ -4,6 +4,8 @@
 # Arrieta Mancera Luis Sebastian
 # Martinez Hernandez Zuriel ENrique (318056423)
 
+############# INCISO 1.1 #############
+
 # Metodo que encuentra el numero faltante en un arreglo 
 # cuyos valores estan entre entre 0 y n − 1.
 def numeroFaltante(arreglo):
